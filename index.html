@@ -1,0 +1,403 @@
+<!DOCTYPE html> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script> 
+<!--SCORM-->
+<script src="js/lms/lms_api.js"></script>
+<script src="js/lms/init.js"></script>
+<script async>
+//var masterUrl ='https://preprod.daylight.themoocagency.com/quizMaster'
+// var imgUrl ='https://preprod.daylight-back.themoocagency.com/daylightQuizEditor/uploadFileImg/'
+// var quizID="1"
+//var postOrPre="Pre"
+
+//var x
+// var TotalBindQuest=0
+var configArray = [];
+var configArray2 = 'dds';
+//   var qNameFile="question1v.json"
+//   var aNameFile="answers1v.json"
+
+var chronoButton = false;
+var pauseButton = false;
+var setShuffle = false;
+var TotalTime;
+
+$(document).ready(function() {
+  //code here
+  //
+  $.ajax({
+    url: `https://firestore.googleapis.com/v1/projects/daylight-dev2/databases/(default)/documents/quiz/${quizID}`,
+    type: 'GET',
+    dataType: 'html',
+    header: 'Content-Type: application/json',
+    cache: false,
+    processData: false,
+    success: function(data) {
+      var quiz = JSON.parse(data).fields.config.mapValue.fields;
+      const questionsSetId = parseInt(quiz.questionsSetId.integerValue);
+
+      $.ajax({
+        url: `https://firestore.googleapis.com/v1/projects/daylight-dev2/databases/(default)/documents/questions/${questionsSetId}`,
+        type: 'GET',
+        dataType: 'html',
+        header: 'Content-Type: application/json',
+        cache: false,
+        processData: false,
+        success: function(data) {
+          const questionsSource = JSON.parse(data).fields;
+
+          TotalBindQuest = parseInt(quiz.quiz_n_questions.integerValue);
+          TotalTime = parseInt(quiz.quiz_time.integerValue);
+          jQuery('#quizTitle').text(quiz.quiz_title.stringValue);
+          jQuery('#quizSubtitle').text(quiz.quiz_title2.stringValue);
+          jQuery('#bindMyNestTot').text(TotalBindQuest);
+          var s = document.createElement('script');
+          s.type = 'text/javascript';
+          s.src = 'js/controllers/chrono.js';
+          jQuery('#listOfMark').prepend(s);
+
+          var bendOjerry = jQuery('.bendO');
+
+          for (i = 0; i < quiz.SubLines.arrayValue.values.length; i++) {
+            jQuery(bendOjerry[i]).append(
+              "<span class='blueRay'>" +
+                quiz.SubLines.arrayValue.values[i].stringValue +
+                '</br> </br> </span>'
+            );
+          }
+
+          var alreadyDone = localStorage.getItem('ale');
+          $('#body').show();
+
+          initCourse();
+          $('#body').show();
+
+          if (alreadyDone == true || alreadyDone == 'true') {
+            if (window.confirm('Souhaitez vous recommencer?')) {
+              localStorage.clear();
+              $('#body').show();
+            } else {
+              $('#body').show();
+            }
+          }
+        }
+      });
+    }
+  });
+});
+
+            
+</script>
+<html lang="en" ng-app="turtleFacts">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>QUIZ DAYLIGHT</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+      <link rel="stylesheet" href="css/style.css">
+      <link rel="stylesheet" href="css/countDown.css">
+      <link rel="shortcut icon" href="../favicon.ico">
+      <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+      <link rel="stylesheet" type="text/css" href="css/vicons-font.css" />
+      <link rel="stylesheet" type="text/css" href="css/base.css" />
+      <link rel="stylesheet" type="text/css" href="css/buttons.css" />
+      <link href="https://fonts.googleapis.com/css?family=Archivo" rel="stylesheet">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+      <!--SCORM-->
+   </head>
+   <style type="text/css">
+      #body{display:none}
+      .overstyl {
+      position: absolute;
+      right: 21%;
+      top: 15%;
+      opacity: 0.8;
+      width: 200px;
+      height: 57px;
+      }
+      .noneRight {
+      float:right
+      }
+      @media screen and (min-width: 200px) and (max-width: 950px) {
+      .noneRight {
+      float:none;
+      clear:both;
+      }
+      }
+      .SpecialBlue::after {
+      background: #0097B6;
+      }
+      .SpecialBlue{font-size: 12px;
+      font-family: arial;
+      height: 60px;
+      margin: 15px 0px;
+      }   
+	  .noResult{font-size: 24px;
+    
+      } 
+   </style>
+   <body id="body" >
+      <!-- <div class="container" ng-controller="JsCtrl as Js">  -->
+      <div class="container" ng-controller="quizCtrl as quiz">
+         <div class="page-header">
+         </div>
+         <div ng-controller="listCtrl as list" ng-hide="list.quizMetrics.quizActive || list.quizMetrics.resultsActive">
+            <!-- top search bar with start quiz button using bootstrap --> 
+            <form class="form-inline well well-sm clearfix" style="font-size: 17px;padding:20%">
+               <h2 id="quizTitle"></h2>
+               <h2 id="quizSubtitle"></h2>
+               <br id="pointBlue">
+               <span class='blueRay bendO'></span>
+               <span class='blueRay bendO'></span>
+               <span class='blueRay bendO'></span>
+               <span class='blueRay bendO'></span>
+               <span class='blueRay bendO'> </span>
+               <center>
+                  <button class="btn btn-warning blumental pull-right overstyl" ng-click="list.activateQuiz();list.playSongStart();fadeOutIn();quiz.reloadTime();" onclick="fadeOutInQuest();closePop();"> <strong >Commencer le Quiz</strong>
+                  </button> 
+               </center>
+               </br></br>
+               </br></br>
+            </form>
+            </br>
+         </div>
+         <div id="show" ng-controller="quizCtrl as quiz" ng-show="quiz.quizMetrics.quizActive"  style="color: snow;">
+            <div class="row">
+               <center>
+               <div class="col-xs-4">
+			   <button style="float: left;" class="button button--pipaluk SpecialBlue "   ng-style="{'visibility': quiz.chronoButton?'visible':'hidden'}"  id="chronos">	 
+				<span style ="font-size: 17px;"id="clockdiv">
+				</span> 
+				</br></br>
+			   </button> 
+			   </div>
+               <div class="col-xs-4 answerCodeRequest">
+                  <center>
+					  <button  style="float: none;"class="button button--pipaluk SpecialBlue answerCodeRequest" >
+						  <span id ="bindMyNest">0
+						  </span>/
+						  <span id ="bindMyNestTot">
+						  </span>
+						  </br>QUESTIONS RÉPONDUES 
+					  </button>
+				  </center>
+               </div>
+               <div class="col-xs-4">
+                  <button class="button button--pipaluk SpecialBlue noneRight" style = "" id="pausa"  ng-style="{'visibility': quiz.pauseButton?'visible':'hidden'} ">METTRE LE QUIZ EN PAUSE</br>
+                  <i class="fa fa-pause" aria-hidden="true"></i>
+                  </button> 
+               </div>
+               <div class="col-xs-4" >
+				<button style="float: left;" class="button button--pipaluk " ng-click='quiz.setMarkQuestion()' >AFFICHER LES QUESTIONS MARQUÉES
+				</button>     
+				</div>
+               <div class="col-xs-4">
+                  <center>
+					<button  style="float: none;"class="button button--pipaluk " ng-click='quiz.setAnsweredQuestion()' >AFFICHER LES QUESTIONS NON RÉPONDUES
+					</button>
+				  </center>
+               </div>
+               <div class="col-xs-4">
+				   <button class="button button--pipaluk noneRight" ng-click='quiz.setAllQuestion()'>AFFICHER LA LISTE DES QUESTIONS
+				   </br></br>
+				   </button>
+			   </div>
+               <div class='closer allMark'  id='listOfMark'>
+                  <div class="close">
+				  </div>
+                  <div class="closeMeFor">
+				  </div>
+                  <h4   style='font-size:0px' class="noPeng listMyRideA link--kukuri" ng-repeat="question in quiz.dataService.quizQuestions"  ng-click="quiz.setActiveQuestion($index)" >
+                     Q{{question.question_id}}. {{question.text}}</br>
+                  </h4>
+               </div>
+               <div class='closer allAns'  id='listOfAnswer' >
+                  <div class="closeMeFor">
+				  </div>
+                  <h4   style='font-size:15px' class="noPeng listMyRideB link--kukuri" ng-repeat="question in quiz.dataService.quizQuestions"  ng-click="quiz.setActiveQuestion($index)" >
+                     Q{{question.question_id}}. {{question.text}}
+					 </br>
+                  </h4>
+               </div>
+               <div class='closer allAll'  id='listOfAll' >
+                  <div class="closeMeFor">
+				  </div>
+                  <h4   style='font-size:15px' class="noPeng listMyRideC link--kukuri" ng-repeat="question in quiz.dataService.quizQuestions"  ng-click="quiz.setActiveQuestion($index)" >
+                     Q{{question.question_id}}. {{question.text}}
+					 </br>
+                  </h4>
+               </div>
+            </div>
+            <div class="row">
+               <div class="console.log console.log-danger" ng-show="quiz.error"> Erreur! Vous n'avez pas répondu à toutes les questions! <button class="close" ng-click="quiz.error = false">&times </button> </div>
+               <div id="popup" class="popup">Temps écoulé</br></br></br></br></br></br></br> <button class=" btn btn-warning blumental " ng-click="quiz.questionAnswered();quiz.reloadTime;" onclick="fadeOutInQuest();">Voir la réponse </button> </div>
+               <div class="well well-sm startQuest questCol" ng-hide="quiz.finalise" id="startQuest" style="margin-top: 10px;">
+                  <div class="row">
+                     <div class="col-sm-16" >
+                        <h4 >{{quiz.activeQuestion+1 + ". " + quiz.dataService.quizQuestions[quiz.activeQuestion].text}}</h4>
+                        <center>
+                           <img onload="this.style.display = 'block'"class="questImg" id="photoQ{{quiz.dataService.quizQuestions[quiz.activeQuestion].question_id_true}}" ng-src="{{quiz.dataService.quizQuestions[quiz.activeQuestion].questionImgUrl}}" on-src-error index=="angular.element(this).scope().quiz.dataService.quizQuestions[quiz.activeQuestion].questionImgUrl = false" onerror="this.style.display = 'none'">
+                        </center>
+                        <div class="question-answer" ng-class="{'image-selected': $index === quiz.dataService.quizQuestions[quiz.activeQuestion].selected}" ng-click="quiz.selectAnswer($index)"> </div>
+                        <div class="row" ng-if="quiz.dataService.quizQuestions[quiz.activeQuestion].type === 'text'">
+                           <div class="col-sm-12 noLeft hoverBlue" ng-repeat="answer in quiz.dataService.quizQuestions[quiz.activeQuestion].possibilities">
+                              <h4 class="answer" ng-class="{'bg-info': $index === quiz.dataService.quizQuestions[quiz.activeQuestion].selected}" ng-click="quiz.selectAnswer($index)"> {{answer.answer}} </h4>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- <div class="col-sm-4" ng-show="quiz.feedBackQuest"> -->
+                     <!-- <img class="questImg" ng-src="ressourses/img/q1.png" ng-click="(&quot;&quot;)" src="ressourses/img/q1.png">  -->
+                     <!-- </div> -->
+                  </div>
+                  <div class="row" ng-if="quiz.dataService.quizQuestions[quiz.activeQuestion].type === 'image'" >
+                     <div class="col-sm-6" ng-repeat="answer in quiz.dataService.quizQuestions[quiz.activeQuestion].possibilities">
+                        <div class="image-answer" ng-class="{'image-selected': $index === quiz.dataService.quizQuestions[quiz.activeQuestion].selected}" ng-click="quiz.selectAnswer($index)"> <img ng-src="{{answer.answer}}"> </div>
+                     </div>
+                  </div>
+               </div>
+               <button class="btn btn-warning blumental" ng-click="quiz.questionAnswered3();quiz.prevtest()" id="showPrev" style='display:none' ng-hide="quiz.finalise">Précédent</button>  
+               <button class="btn btn-warning blumental" ng-click="quiz.questionAnswered();quiz.questionAnswered2()" ng-show="quiz.submit" onclick="fadeOutInfeedBack();kipsta()fadeOutInQuest();fakeIr()" ng-hide="quiz.finalise">Suivant</button>   
+               </br>				  
+               </br>	
+               <center>
+                  <div class=" col-sm-3 btn btn-warning blumental" style="background-color:#3f51b5;float: none;" ng-hide="quiz.finalise" >
+                     Marquer la question
+                     <input type="checkbox"  style="margin: 4px 0 0;
+                        margin-top: 4px;
+                        margin-top: 0px;
+                        line-height: normal;
+                        position: relative;"id="subscribeNews" name="subscribe" value="newsletter" onclick="markMyGuest()" >
+                     <span class="checkmark"></span>
+                  </div>
+                  <div ng-hide="quiz.finalise" class=" col-sm-3 btn btn-warning blumental" style="background-color:#512053;float:none; cursor:pointer" ng-click="quiz.finalise=true" >
+                     Soumettre le Quiz
+                  </div>
+               </center>
+               <script>
+                  var activeWear=0;
+                  var markingMe=document.getElementById("subscribeNews").checked
+                  var markActive=activeWear
+                  var marking=[]
+                  function markMyGuest(){
+                  markingMe=document.getElementById("subscribeNews").checked
+                  markActive='mark'+activeWear
+                  if(markingMe == true){
+                  marking[activeWear]=true;
+                  
+                  localStorage.setItem(markActive,true)
+                  }
+                  if(markingMe == false){
+                  marking[activeWear]=false;
+                  
+                  localStorage.setItem(markActive,false)
+                  }
+                  }
+                  			
+               </script>	
+               <div class="well well-sm" ng-show="quiz.finalise">
+                  <div class="row">
+                     <div class="col-xs-12">
+                        <h3 style="color:black">Voulez vous soumettre vos réponses?</h3>
+                        <button class="btn btn-success" ng-click="dopamine();quiz.finaliseAnswers();">Oui</button> <button class="btn btn-danger" ng-click="quiz.finalise = false">Non</button> 
+                     </div>
+                  </div>
+               </div>
+               <audio style="display:none;" controls autoplay id ="questionPerf"pk-audio="sounds.sound"  pk-src="{{quiz.dataService.quizQuestions[quiz.activeQuestion].questionSongUrl}}" > </audio>
+               <audio style="display:none" controls autoplay id ="answerPerf"pk-audio="sounds.sound"  pk-src="{{quiz.dataService.quizQuestions[quiz.activeQuestion].answerSongUrl}}"> </audio>
+            </div>
+         </div>
+         <div ng-controller="resultsCtrl as results" ng-show="results.quizMetrics.resultsActive">
+            <div class="row white">
+               <div class="col-xs-12">
+                  <h2 class="white">Resultats:
+                  </h2>
+				  <span class="noResult" ng-hide="results.showResultConfig">Les résultats sont masqués pour cette session.</br></br></br></span >
+                  <div class="btn-toolbar" ng-show="results.showResultConfig"> 
+                     <button class="btn" ng-repeat="question in results.dataService.quizQuestions" ng-class="{'btn-success': question.correct, 'btn-danger': !question.correct}" ng-click="results.setActiveQuestion($index)">  {{$index + 1}}
+                     <span class="glyphicon" ng-class="{'glyphicon-ok': question.correct, 'glyphicon-remove': !question.correct}">
+                     </span> 
+                     </button> 
+                  </div>
+               </div>
+               <div class="col-xs-4" ng-show="false">
+                  <div class="row">
+                     <h4 >Légende:
+                     </h4>
+                     <div class="col-sm-4">
+                        <button class="btn btn-success"> 
+                        <span class="glyphicon glyphicon-ok"></span> 
+                        </button> 
+                        <p>Correcte
+                        </p>
+                     </div>
+                     <div class="col-sm-4">
+                        <button class="btn btn-danger"> 
+                        <span class="glyphicon glyphicon-remove">
+                        </span> 
+                        </button> 
+                        <p>Incorrecte</p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="row white" ng-show="results.showResultConfig">
+               <div class="col-xs-12 top-buffer" ng-show="results.showResultConfig">
+
+                  <h2 ng-if="results.calculatePerc()<50">Dommage, vous avez obtenu le score de {{results.calculateScore()}} / {{results.dataService.quizQuestions.length}}</h2>
+                  <h2 ng-if="results.calculatePerc()>50">Bravo, vous avez atteint le score de {{results.calculateScore()}} / {{results.dataService.quizQuestions.length}}</h2>
+                  <h2><strong>{{results.calculatePerc()}}%</strong></h2>
+               </div>
+            </div>
+            <div class="row"  ng-show="results.showResultConfig">
+               <h3 class="white">Questions:</h3>
+               <div class="well well-sm">
+                  <div class="row">
+                     <div class="col-xs-12">
+                        <h4>{{results.activeQuestion+1 +". "+results.dataService.quizQuestions[results.activeQuestion].text}}</h4>
+                        <div class="row" ng-if="results.dataService.quizQuestions[results.activeQuestion].type === 'text'">
+						     <center>
+                           <img onload="this.style.display = 'block'"class="questImg" id="photoQ{{quiz.dataService.quizQuestions[quiz.activeQuestion].question_id_true}}" ng-src="{{quiz.dataService.quizQuestions[quiz.activeQuestion].questionImgUrl}}" on-src-error index=="angular.element(this).scope().quiz.dataService.quizQuestions[quiz.activeQuestion].questionImgUrl = false" onerror="this.style.display = 'none'">
+                        </center>
+                           <div class="col-sm-6 outrage" ng-repeat="answer in results.dataService.quizQuestions[results.activeQuestion].possibilities">
+                              <h4 class="answer" ng-class="results.getAnswerClass($index)">
+                                 {{answer.answer}}  
+                                 <p class="pull-right" ng-show="$index+1!== results.quizMetrics.correctAnswers[results.activeQuestion] && $index === results.dataService.quizQuestions[results.activeQuestion].selected"></p>
+                                 <p class="pull-right" ng-show="$index+1=== results.quizMetrics.correctAnswers[results.activeQuestion]"></p>
+                              </h4>
+                           </div>
+                           <div class="col-xs-12">
+                              <span class="goodAnswer" >EXPLICATION</span>
+                              <h4 onchange ='kipsta()' class="answer feden2 feden" ng-class="{'bg-info': $index === quiz.dataService.quizQuestions[quiz.activeQuestion].selected}" ng-click="quiz.selectAnswer($index)"> {{results.dataService.quizQuestions[results.activeQuestion].feedBack}} </h4>
+							    <center>
+                           <img onload="this.style.display = 'block'"class="questImg" id="photoQ{{quiz.dataService.quizQuestions[quiz.activeQuestion].question_id_true}}" ng-src="{{results.dataService.quizQuestions[results.activeQuestion].answerImgUrl}}" on-src-error index=="angular.element(this).scope().quiz.dataService.quizQuestions[quiz.activeQuestion].questionImgUrl = false" onerror="this.style.display = 'none'">
+                        </center>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="row" ng-if="results.dataService.quizQuestions[results.activeQuestion].type === 'image'">
+                        <div class="col-sm-6 outrage" ng-repeat="answer in results.dataService.quizQuestions[results.activeQuestion].possibilities">
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <button class="btn btn-primary btn-lg" ng-click="results.reset()">Retourner au menu
+            </button> 
+         </div>
+      </div>
+      </div>
+      </div> 
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.2/angular.min.js"></script> 
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-audio/1.7.4/angular.audio.js"></script> <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script> 
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> <script src="js/app.js"></script> 
+<!-- TODO: here or upthere? -->
+      <script src="js/factories/config.js"></script> 
+      <script src="js/factories/dataservice.js"></script> 
+      <script src="js/controllers/quiz.js"></script> 
+      <script src="js/controllers/results.js"></script> 
+      <script src="js/controllers/animation.js"></script> 
+      <script src="js/factories/quizMetrics.js"></script> 
+      <script src="js/controllers/list.js"></script>
+   </body>
+</html>

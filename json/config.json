@@ -1,0 +1,16 @@
+﻿{ "quiz_title":"Quiz Post-présentiel du chapitre",
+     "quiz_title2":"1-Introduction",
+     "quiz_id":101,
+     "quiz_n_questions":20,
+     "quiz_n_questionsMax":42,
+     "answers_file_name":"answers_post_chap1_v3",
+     "question_file_name":"question_post_chap1_v3",
+      "SubLines":[
+         "Vous venez de terminer le J2 du Parcours de Préparation à la certification PMP®",
+         "Après cette seconde journée de formation en présentiel, il est important que vous puissiez valider vos connaissances sur le chapitre « Introduction »  du parcours à travers ce quiz de 20 questions sur ce chapitre, sans limite de temps.",
+         "Vous pourrez refaire ce test autant de fois que vous le désirez. Il est important que vous puisez avoir au moins 17 bonnes réponses sur les 20 questions posées",
+         "Les boutons de navigation « Questions marquées », « Questions non répondues » et « Liste des questions » vous permettent de vous déplacer au sein de ce quiz.",
+"Bon quiz !"
+      ]
+   }
+ 

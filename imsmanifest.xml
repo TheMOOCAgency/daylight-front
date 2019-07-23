@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2" identifier="ITEM-10775" xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+  <organizations default="ASF">
+    <organization identifier="ASF">
+      <title>Daylight</title>
+      <item identifier="ITEM-10775" isvisible="true" identifierref="RES-10775">
+        <title>Daylight</title>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="RES-10775" type="webcontent" adlcp:scormtype="sco" href="index.html">
+      <file href="index.html" />
+      <file href="_lms/lms_api.js" />
+      <file href="_lms/init.js" />
+      <file href="script/jquery.js" />
+      <file href="script/flowplayer.js" />
+      <!--
+      <file href="_script/jquery.rwdImageMaps.js" />
+      <file href="_script/jquery.rwdImageMaps.min.js" />
+      <file href="_script/fix.js" />
+      <file href="_script/flowplayer.swf" />
+      <file href="_script/flowplayer.content-3.2.9.swf" />
+      <file href="_css/quiz.css" />
+      <file href="_css/functional.css" />
+      <file href="_css/player.css" />
+	  <file href="_json/quiz1fr.json" />
+    -->
+    </resource>
+  </resources>
+</manifest>
