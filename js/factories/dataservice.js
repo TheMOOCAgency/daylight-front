@@ -24,7 +24,7 @@ var maxQuestConfig;
 var chronoButton;
 var pauseButton;
 var setShuffle;
-//var showResultConfig = true;
+var showResultConfig = true; //TODO error always true
 var passScore;
 // from configJson
 // from configJson
@@ -167,7 +167,7 @@ var quesTime = 1;
       chronoButton: chronoButton,
       pauseButton: pauseButton,
       setShuffle: setShuffle,
-      //showResultConfig: showResultConfig,
+      showResultConfig: showResultConfig,
       passScore: passScore,
       configArray2: configArray2
     };

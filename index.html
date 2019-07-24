@@ -23,15 +23,15 @@ var pauseButton = false;
 var setShuffle = false;
 var TotalTime;
 
-// function getUrlVars() {
-//     var vars = {};
-//     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-//         vars[key] = value;
-//     });
-//     return vars;
-// }
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
 
-// var quizID = getUrlVars()["quizID"];
+var quizID = getUrlVars()["quizID"];
 
 $(document).ready(function() {
   //code here
