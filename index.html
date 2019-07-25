@@ -2,6 +2,10 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script> 
+
+<!--CONFIG-->
+<script src="js/factories/config.js"></script>
+
 <!--SCORM-->
 <script src="js/lms/lms_api.js"></script>
 <script src="js/lms/init.js"></script>
@@ -22,16 +26,6 @@ var chronoButton = false;
 var pauseButton = false;
 var setShuffle = false;
 var TotalTime;
-
-function getUrlVars() {
-    var vars = {};
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-        vars[key] = value;
-    });
-    return vars;
-}
-
-var quizID = getUrlVars()["quizID"];
 
 $(document).ready(function() {
   //code here
@@ -107,7 +101,6 @@ $(document).ready(function() {
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
       <link rel="stylesheet" href="css/style.css">
       <link rel="stylesheet" href="css/countDown.css">
-      <link rel="shortcut icon" href="../favicon.ico">
       <link rel="stylesheet" type="text/css" href="css/normalize.css" />
       <link rel="stylesheet" type="text/css" href="css/vicons-font.css" />
       <link rel="stylesheet" type="text/css" href="css/base.css" />
@@ -146,6 +139,9 @@ $(document).ready(function() {
 	  .noResult{font-size: 24px;
     
       } 
+      #quizSubtitle{
+         font-size:23px;
+      }
    </style>
    <body id="body" >
       <!-- <div class="container" ng-controller="JsCtrl as Js">  -->
@@ -367,8 +363,9 @@ $(document).ready(function() {
                         <h4>{{results.activeQuestion+1 +". "+results.dataService.quizQuestions[results.activeQuestion].text}}</h4>
                         <div class="row" ng-if="results.dataService.quizQuestions[results.activeQuestion].type === 'text'">
 						     <center>
-                           <img onload="this.style.display = 'block'"class="questImg" id="photoQ{{quiz.dataService.quizQuestions[quiz.activeQuestion].question_id_true}}" ng-src="{{quiz.dataService.quizQuestions[quiz.activeQuestion].questionImgUrl}}" on-src-error index=="angular.element(this).scope().quiz.dataService.quizQuestions[quiz.activeQuestion].questionImgUrl = false" onerror="this.style.display = 'none'">
+                           <img onload="this.style.display = 'block'" class="questImg" id="photoQ{{quiz.dataService.quizQuestions[quiz.activeQuestion].question_id_true}}" src="{{results.dataService.quizQuestions[results.activeQuestion].questionImgUrl}}" ng-src="{{results.dataService.quizQuestions[results.activeQuestion].questionImgUrl}}"  on-src-error index=="angular.element(this).scope().quiz.dataService.quizQuestions[quiz.activeQuestion].questionImgUrl = false" onerror="this.style.display = 'none'">
                         </center>
+                        </div>
                            <div class="col-sm-6 outrage" ng-repeat="answer in results.dataService.quizQuestions[results.activeQuestion].possibilities">
                               <h4 class="answer" ng-class="results.getAnswerClass($index)">
                                  {{answer.answer}}  
@@ -380,7 +377,7 @@ $(document).ready(function() {
                               <span class="goodAnswer" >EXPLICATION</span>
                               <h4 onchange ='kipsta()' class="answer feden2 feden" ng-class="{'bg-info': $index === quiz.dataService.quizQuestions[quiz.activeQuestion].selected}" ng-click="quiz.selectAnswer($index)"> {{results.dataService.quizQuestions[results.activeQuestion].feedBack}} </h4>
 							    <center>
-                           <img onload="this.style.display = 'block'"class="questImg" id="photoQ{{quiz.dataService.quizQuestions[quiz.activeQuestion].question_id_true}}" ng-src="{{results.dataService.quizQuestions[results.activeQuestion].answerImgUrl}}" on-src-error index=="angular.element(this).scope().quiz.dataService.quizQuestions[quiz.activeQuestion].questionImgUrl = false" onerror="this.style.display = 'none'">
+                           <img onload="this.style.display = 'block'" class="questImg" id="photoR{{quiz.dataService.quizQuestions[quiz.activeQuestion].question_id_true}}" src="{{results.dataService.quizQuestions[results.activeQuestion].answerImgUrl}}" ng-src="{{results.dataService.quizQuestions[results.activeQuestion].answerImgUrl}}" on-src-error index=="angular.element(this).scope().quiz.dataService.quizQuestions[quiz.activeQuestion].questionImgUrl = false" onerror="this.style.display = 'none'">
                         </center>
                            </div>
                         </div>
@@ -402,7 +399,6 @@ $(document).ready(function() {
       <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-audio/1.7.4/angular.audio.js"></script> <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script> 
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> <script src="js/app.js"></script> 
 <!-- TODO: here or upthere? -->
-      <script src="js/factories/config.js"></script> 
       <script src="js/factories/dataservice.js"></script> 
       <script src="js/controllers/quiz.js"></script> 
       <script src="js/controllers/results.js"></script> 
