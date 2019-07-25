@@ -59,7 +59,7 @@
 			localStorage.setItem('masterScore',mujo);
 			localStorage.setItem('passScore',DataService.passScore);
 						setComplete();
-            return redingo / DataService.quizQuestions.length * 100;
+            return Math.round(redingo / DataService.quizQuestions.length * 100);
 
 			
         }

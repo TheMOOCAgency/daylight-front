@@ -135,7 +135,6 @@ display:none;
 	padding:30px;
 	opacity:0;
 	font-size:22px;
-	background-image:url("img/de.png");
 background-repeat:no-repeat;
 background-size:203px auto;
 background-position:center;
@@ -152,7 +151,6 @@ width: 40%;
 
 	
 #startQuest{
-background-image:url("img/kk.png");
 background-repeat:no-repeat;
 background-size:cover;
 background-color: rgba(5, 0, 0, 00.3);
